@@ -37,6 +37,11 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
     try {
         json json = json::from_bson(msg->get_payload());
 
+        // Ignore Wi-Fi radio keep-alive messages from the Flutter app
+        if (json.contains("ka")) {
+            return;
+        }
+
         ROS_INFO_STREAM_THROTTLE(0.5, "vx:" << json["vx"] << " vr: " << json["vz"]);
         geometry_msgs::Twist t;
         t.linear.x = json["vx"];
