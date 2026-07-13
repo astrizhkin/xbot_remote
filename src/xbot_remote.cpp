@@ -37,6 +37,11 @@ void on_message(server* s, websocketpp::connection_hdl hdl, message_ptr msg) {
     try {
         json json = json::from_bson(msg->get_payload());
 
+        // Ignore Wi-Fi radio keep-alive messages from the Flutter app
+        if (json.contains("ka")) {
+            return;
+        }
+
         ROS_INFO_STREAM_THROTTLE(0.5, "vx:" << json["vx"] << " vr: " << json["vz"]);
         geometry_msgs::Twist t;
         t.linear.x = json["vx"];
@@ -62,7 +67,7 @@ void* server_thread(void* arg) {
         echo_server.set_reuse_addr(true);
 
         // Listen on port 9002
-        echo_server.listen(9002);
+        echo_server.listen("0.0.0.0", 9002);
 
         // Start the server accept loop
         echo_server.start_accept();
