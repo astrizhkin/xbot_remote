@@ -67,7 +67,7 @@ void* server_thread(void* arg) {
         echo_server.set_reuse_addr(true);
 
         // Listen on port 9002
-        echo_server.listen(9002);
+        echo_server.listen(websocketpp::lib::asio::ip::tcp::v4(),9002);
 
         // Start the server accept loop
         echo_server.start_accept();
